@@ -13,9 +13,9 @@ YouTube 影片下載器，以 Python 撰寫。使用 tkinter 模組做為操作�
 
 ## 如何使用
 1. 在終端中執行以下命令：
-  ```bash
-  python YT_downloader.py
-  ```
+    ```bash
+    python YT_downloader.py
+    ```
 2. 在視窗上的輸入框貼上要下載的youtuber網址
 3. 按下 "download" 按鈕
     - 如果輸入的是單一影片的 URL，將會啟動一個執行緒進行影片下載。
