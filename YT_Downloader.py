@@ -9,13 +9,15 @@ from tkinter import messagebox
 def get_urls(url):
     
     urls = []   # 影片清單網址
-    if '&list=' not in url : return urls    # 單一影片
+    if '&list=' not in url: # 判斷是否為單一影片 
+        return urls    
+    
     response = requests.get(url)    # 發送 GET 請求
     if response.status_code != 200:
         print('request failure')
         return
     
-    # 請求成功
+    # 播放清單爬蟲
     bs = BeautifulSoup(response.text, 'lxml')
     a_list = bs.find_all('a')
     base = 'https://www.youtube.com/'        
@@ -39,7 +41,7 @@ def start_download(url, listbox):
     
     lock.acquire()              # lock
     no = listbox.size()     # 下載編號
-    listbox.insert(tk.END, f'{no:02d}:{name}.....下載中')
+    listbox.insert(tk.END, f'{no:02d}:{name}.....downloading')
     print('insert:', no, name)
     lock.release()              # release lock
     
@@ -49,7 +51,7 @@ def start_download(url, listbox):
     lock.acquire()              # lock
     print('update:', no, name)
     listbox.delete(no)
-    listbox.insert(no, f'{no:02d}:●{name}.....下載完成')
+    listbox.insert(no, f'{no:02d}:●{name}.....finished ')
     lock.release()              # release lock
     
 
@@ -73,9 +75,10 @@ def click_func():
         
     # 下載清單中所有影片 
         print('download listt')    
-        for u in urls:     # 建立與啟動執行緒
-            threading.Thread(target = m.start_download, 
-                             args=(u, listbox)).start()
+        for u in urls:     # thread建立、啟動
+            T = threading.Thread(target = m.start_download, 
+                             args=(u, listbox))
+            T.start()
    
     # 下載單一影片 
     else:   
@@ -83,8 +86,9 @@ def click_func():
         
         if messagebox.askyesno('Check', 
                                f'Do you want to download {yt.title}？') :
-            threading.Thread(target = m.start_download, 
-                             args=(url, listbox)).start()  
+            T = threading.Thread(target = m.start_download, 
+                             args=(url, listbox))
+            T.start()  
         else:
             print('cancel')
             
@@ -100,7 +104,7 @@ input_fm = tk.Frame(window, bg='blue',   # 建立 Frame
 input_fm.pack()
 
 # Label
-lb = tk.Label(input_fm, text='input YouTube url', 
+lb = tk.Label(input_fm, text='input YouTube URL', 
               bg='blue', fg='white',font=('標楷體', 14))
 lb.place(rely=0.25, relx=0.5, anchor='center')
 
